@@ -105,9 +105,9 @@ const SettingsPage = () => {
                 <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-lg flex items-start gap-2.5 text-xs text-emerald-800">
                   <CheckCircle2 size={16} className="text-emerald-600 shrink-0 mt-0.5" />
                   <div>
-                    <p className="font-semibold">Connected to Backend</p>
-                    <p className="text-emerald-700 mt-0.5 font-mono">
-                      {apiUrl} — SQLite Database Active ({backendStatus.details?.stats?.orders ?? 0} orders loaded)
+                    <p className="font-semibold">Connected</p>
+                    <p className="text-emerald-700 mt-0.5">
+                      Backend API is reachable.
                     </p>
                   </div>
                 </div>

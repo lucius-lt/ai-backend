@@ -301,11 +301,11 @@ export const checkBackendHealth = async (testUrl) => {
     if (typeof window !== 'undefined' && window.location.protocol === 'https:' && parsed.protocol === 'http:') {
       return {
         online: false,
-        error: 'Mixed Content: This site is HTTPS (Vercel). Browsers block calls to insecure http:// localhost. To connect your local backend, run: "npx localtunnel --port 5000" and use the https:// tunnel URL, or deploy the backend to Render.'
+        error: 'The deployed frontend requires a secure HTTPS backend URL.'
       };
     }
   } catch {
-    return { online: false, error: 'Invalid URL format (e.g. http://localhost:5000/api or https://your-domain.com/api)' };
+    return { online: false, error: 'Invalid URL format (e.g. https://your-domain.com/api)' };
   }
 
   try {
@@ -319,20 +319,22 @@ export const checkBackendHealth = async (testUrl) => {
     clearTimeout(timeoutId);
 
     if (!res.ok) {
-      return { online: false, error: `Server returned HTTP ${res.status}: ${res.statusText}` };
+      return { online: false, error: `The backend returned an unexpected response (HTTP ${res.status}).` };
     }
 
     const data = await res.json();
     if (!data || data.success !== true) {
-      return { online: false, error: 'Endpoint responded but is not a valid Order Analytics API' };
+      return { online: false, error: 'The backend returned an unexpected response.' };
     }
 
     return { online: true, data };
   } catch (err) {
-    const isTimeout = err.name === 'AbortError';
+    if (err.name === 'TypeError' && err.message.includes('Failed to fetch')) {
+      return { online: false, error: 'The backend rejected this frontend origin. Check the backend CORS configuration.' };
+    }
     return { 
       online: false, 
-      error: isTimeout ? 'Connection timed out (no response within 3s)' : (err.message || 'Connection refused') 
+      error: 'Unable to reach the backend API.' 
     };
   }
 };
