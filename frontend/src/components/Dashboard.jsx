@@ -82,8 +82,8 @@ const Dashboard = () => {
     fetchData(appliedFilters);
   }, [fetchData, appliedFilters]);
 
-  const handleApplyFilters = () => {
-    setAppliedFilters({ ...filters });
+  const handleApplyFilters = (newFilters) => {
+    setAppliedFilters(newFilters && newFilters.startDate !== undefined ? { ...newFilters } : { ...filters });
   };
 
   const handleResetFilters = () => {

@@ -71,6 +71,14 @@ const fetchAPI = async (endpoint, filters) => {
  */
 const tryLiveOrMock = async (liveFn, mockFn) => {
   if (getUseMock()) return mockFn();
+
+  // If deployed on HTTPS (like Vercel) and attempting to call insecure http://,
+  // browsers will block mixed-content. Fail fast to mock so UI responds instantly.
+  const baseUrl = getApiUrl();
+  if (typeof window !== 'undefined' && window.location.protocol === 'https:' && baseUrl.startsWith('http:')) {
+    return mockFn();
+  }
+
   try {
     return await liveFn();
   } catch {
@@ -247,8 +255,15 @@ export const checkBackendHealth = async (testUrl) => {
     if (!['http:', 'https:'].includes(parsed.protocol)) {
       return { online: false, error: 'URL must start with http:// or https://' };
     }
+
+    if (typeof window !== 'undefined' && window.location.protocol === 'https:' && parsed.protocol === 'http:') {
+      return {
+        online: false,
+        error: 'Mixed Content: This site is HTTPS (Vercel). Browsers block calls to insecure http:// localhost. To connect your local backend, run: "npx localtunnel --port 5000" and use the https:// tunnel URL, or deploy the backend to Render.'
+      };
+    }
   } catch {
-    return { online: false, error: 'Invalid URL format (e.g. http://localhost:5000/api)' };
+    return { online: false, error: 'Invalid URL format (e.g. http://localhost:5000/api or https://your-domain.com/api)' };
   }
 
   try {
