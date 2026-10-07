@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Database, RefreshCw, CheckCircle2, XCircle, RotateCcw } from 'lucide-react';
-import { getApiUrl, setApiUrl, getUseMock, setUseMock, checkBackendHealth, DEFAULT_API_URL } from '../services/api';
+import { getApiUrl, setApiUrl, checkBackendHealth, DEFAULT_API_URL } from '../services/api';
 
 const SettingsPage = () => {
   const [apiUrl, setLocalApiUrl] = useState(getApiUrl());
-  const [useMock, setLocalUseMock] = useState(getUseMock());
   const [backendStatus, setBackendStatus] = useState({ checking: true, online: false, message: '' });
 
   const testConnection = useCallback(async (urlToTest) => {
@@ -49,23 +48,18 @@ const SettingsPage = () => {
     testConnection(DEFAULT_API_URL);
   };
 
-  const handleToggleMock = () => {
-    const nextVal = !useMock;
-    setLocalUseMock(nextVal);
-    setUseMock(nextVal);
-  };
 
   return (
     <div className="max-w-4xl mx-auto pb-12">
       <div className="mb-6">
         <h2 className="text-2xl font-bold text-primary">Settings</h2>
-        <p className="text-sm text-secondary mt-1">Configure your backend connection and data source.</p>
+        <p className="text-sm text-secondary mt-1">Configure your backend REST API connection.</p>
       </div>
 
       <div className="bg-surface rounded-xl border border-border shadow-sm overflow-hidden">
         <div className="p-5 border-b border-border flex items-center gap-3">
           <span className="text-secondary"><Database size={20} /></span>
-          <h3 className="text-base font-semibold text-primary">API Configuration & Data Source</h3>
+          <h3 className="text-base font-semibold text-primary">API Configuration</h3>
         </div>
 
         <div className="p-6 space-y-6">
@@ -128,28 +122,6 @@ const SettingsPage = () => {
                 </div>
               )}
             </div>
-          </div>
-
-          {/* Mock vs Live Toggle Card */}
-          <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-border">
-            <div>
-              <p className="text-sm font-semibold text-primary">Data Source Mode</p>
-              <p className="text-xs text-secondary mt-0.5">
-                {useMock 
-                  ? 'Currently serving data from built-in mock simulator' 
-                  : 'Currently querying live Node.js / Express SQLite backend'}
-              </p>
-            </div>
-            <button
-              onClick={handleToggleMock}
-              className={`px-4 py-2 rounded-full text-xs font-bold transition-all shadow-sm ${
-                useMock 
-                  ? 'bg-amber-100 text-amber-900 border border-amber-300 hover:bg-amber-200' 
-                  : 'bg-emerald-100 text-emerald-900 border border-emerald-300 hover:bg-emerald-200'
-              }`}
-            >
-              {useMock ? 'Using Mock Data (Switch to Live)' : 'Using Live SQLite (Switch to Mock)'}
-            </button>
           </div>
 
         </div>
