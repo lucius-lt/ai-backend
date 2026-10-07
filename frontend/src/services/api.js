@@ -53,7 +53,11 @@ const fetchAPI = async (endpoint, filters) => {
   const query = buildQueryString(filters);
   const targetUrl = `${cleanBase}${endpoint}${query}`;
 
-  const response = await fetch(targetUrl);
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+  const response = await fetch(targetUrl, { signal: controller.signal });
+  clearTimeout(timeoutId);
   if (!response.ok) {
     throw new Error(`API Error: ${response.statusText} (${response.status})`);
   }
@@ -61,52 +65,92 @@ const fetchAPI = async (endpoint, filters) => {
   return result.data !== undefined ? result.data : result;
 };
 
+/**
+ * Try fetching from the live backend first.
+ * If it fails (e.g. on Vercel where there is no backend), silently fall back to mock data.
+ */
+const tryLiveOrMock = async (liveFn, mockFn) => {
+  if (getUseMock()) return mockFn();
+  try {
+    return await liveFn();
+  } catch {
+    // Backend unreachable — auto-fallback to mock data
+    return mockFn();
+  }
+};
+
 // Analytics Data
 export const getSummary = async (filters) => {
-  if (getUseMock()) return getMockSummary(filters);
-  return fetchAPI('/analytics/summary', filters);
+  return tryLiveOrMock(
+    () => fetchAPI('/analytics/summary', filters),
+    () => getMockSummary(filters)
+  );
 };
 
 export const getRevenue = async (filters) => {
-  if (getUseMock()) return getMockRevenue(filters);
-  return fetchAPI('/analytics/revenue', filters);
+  return tryLiveOrMock(
+    () => fetchAPI('/analytics/revenue', filters),
+    () => getMockRevenue(filters)
+  );
 };
 
 export const getCategories = async (filters) => {
-  if (getUseMock()) return getMockCategories(filters);
-  return fetchAPI('/analytics/categories', filters);
+  return tryLiveOrMock(
+    () => fetchAPI('/analytics/categories', filters),
+    () => getMockCategories(filters)
+  );
 };
 
 export const getDelivery = async (filters) => {
-  if (getUseMock()) return getMockDelivery(filters);
-  return fetchAPI('/analytics/delivery', filters);
+  return tryLiveOrMock(
+    () => fetchAPI('/analytics/delivery', filters),
+    () => getMockDelivery(filters)
+  );
 };
 
 export const getOrders = async (filters) => {
-  if (getUseMock()) return getMockOrders(filters);
-  return fetchAPI('/analytics/orders', filters);
+  return tryLiveOrMock(
+    () => fetchAPI('/analytics/orders', filters),
+    () => getMockOrders(filters)
+  );
 };
 
 export const getProducts = async (filters) => {
-  if (getUseMock()) return getMockProducts(filters);
-  return fetchAPI('/analytics/products', filters);
+  return tryLiveOrMock(
+    () => fetchAPI('/analytics/products', filters),
+    () => getMockProducts(filters)
+  );
 };
 
 // External APIs
 export const getCurrencyRates = async (base = 'INR') => {
-  if (getUseMock()) return { base, rates: { EUR: 0.011, USD: 0.012, INR: 1 } };
-  return fetchAPI(`/analytics/currency?base=${base}`);
+  return tryLiveOrMock(
+    () => fetchAPI(`/analytics/currency?base=${base}`),
+    () => Promise.resolve({ base, rates: { EUR: 0.011, USD: 0.012, INR: 1 } })
+  );
 };
 
 export const getCountries = async (region = '') => {
-  const baseUrl = getApiUrl();
-  if (!baseUrl) throw new Error('Backend URL is empty');
-  const cleanBase = baseUrl.replace(/\/+$/, '');
-  const query = region ? `?region=${encodeURIComponent(region)}` : '';
-  const response = await fetch(`${cleanBase}/analytics/countries${query}`);
-  if (!response.ok) throw new Error('Failed to load countries');
-  const res = await response.json();
-  return res.data || [];
+  const mockCountries = [
+    { name: 'India', capital: 'New Delhi', population: 1380004385, region: 'Asia', currencies: 'INR' },
+    { name: 'Germany', capital: 'Berlin', population: 83783942, region: 'Europe', currencies: 'EUR' },
+    { name: 'United States', capital: 'Washington, D.C.', population: 331002651, region: 'Americas', currencies: 'USD' },
+    { name: 'Japan', capital: 'Tokyo', population: 126476461, region: 'Asia', currencies: 'JPY' },
+    { name: 'United Kingdom', capital: 'London', population: 67886011, region: 'Europe', currencies: 'GBP' },
+  ];
+  return tryLiveOrMock(
+    async () => {
+      const baseUrl = getApiUrl();
+      if (!baseUrl) throw new Error('Backend URL is empty');
+      const cleanBase = baseUrl.replace(/\/+$/, '');
+      const query = region ? `?region=${encodeURIComponent(region)}` : '';
+      const response = await fetch(`${cleanBase}/analytics/countries${query}`);
+      if (!response.ok) throw new Error('Failed to load countries');
+      const res = await response.json();
+      return res.data || [];
+    },
+    () => Promise.resolve(region ? mockCountries.filter(c => c.region === region) : mockCountries)
+  );
 };
 
 // Data Ingestion APIs
