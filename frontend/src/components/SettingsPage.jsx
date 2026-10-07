@@ -152,39 +152,6 @@ const SettingsPage = () => {
             </button>
           </div>
 
-          {/* Connection Help & API Format Guide */}
-          <div className="p-5 bg-blue-50/50 rounded-xl border border-blue-200/60 text-xs text-slate-700 space-y-3">
-            <h4 className="font-semibold text-primary text-sm flex items-center gap-2">
-              <span>🔌</span> How to Connect a Live Backend to this Vercel Deployment
-            </h4>
-            <p className="leading-relaxed">
-              Because this website is hosted securely over HTTPS on Vercel, browsers block unencrypted calls to <code className="bg-white px-1.5 py-0.5 rounded border border-border font-mono">http://localhost:5000</code>. To connect your live backend, choose either:
-            </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
-              <div className="bg-white p-3.5 rounded-lg border border-blue-200">
-                <p className="font-semibold text-slate-900 mb-1">Option 1: Free HTTPS Tunnel (Instant)</p>
-                <p className="text-secondary leading-relaxed mb-2">Expose your local running backend via an HTTPS URL:</p>
-                <div className="bg-slate-900 text-emerald-400 p-2 rounded font-mono text-[11px] select-all">
-                  npx localtunnel --port 5000
-                </div>
-                <p className="text-[11px] text-secondary mt-2">
-                  Copy the generated <code className="font-mono text-primary">https://...loca.lt/api</code> and paste it into the URL box above.
-                </p>
-              </div>
-              <div className="bg-white p-3.5 rounded-lg border border-blue-200">
-                <p className="font-semibold text-slate-900 mb-1">Option 2: Deploy to Render / Railway</p>
-                <p className="text-secondary leading-relaxed mb-2">Deploy the <code className="font-mono text-primary">backend/</code> folder to Render:</p>
-                <ul className="list-disc pl-4 space-y-1 text-secondary text-[11px]">
-                  <li>Root Directory: <code className="font-mono">backend</code></li>
-                  <li>Build: <code className="font-mono">npm install</code></li>
-                  <li>Start: <code className="font-mono">node src/app.js</code></li>
-                </ul>
-                <p className="text-[11px] text-secondary mt-2">
-                  Format: <code className="font-mono text-primary">https://your-service.onrender.com/api</code>
-                </p>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </div>
