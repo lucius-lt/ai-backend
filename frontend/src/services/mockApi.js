@@ -72,7 +72,7 @@ export const mockData = {
 
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-export const getMockSummary = async (filters) => {
+export const getMockSummary = async (_filters) => {
   await delay(400);
   return mockData.summary;
 };
@@ -98,7 +98,7 @@ export const getMockCategories = async (filters) => {
   return data;
 };
 
-export const getMockDelivery = async (filters) => {
+export const getMockDelivery = async (_filters) => {
   await delay(400);
   return mockData.delivery;
 };

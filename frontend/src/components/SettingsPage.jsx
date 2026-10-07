@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Database, RefreshCw, CheckCircle2, XCircle, RotateCcw } from 'lucide-react';
 import { getApiUrl, setApiUrl, getUseMock, setUseMock, checkBackendHealth, DEFAULT_API_URL } from '../services/api';
 
@@ -7,7 +7,7 @@ const SettingsPage = () => {
   const [useMock, setLocalUseMock] = useState(getUseMock());
   const [backendStatus, setBackendStatus] = useState({ checking: true, online: false, message: '' });
 
-  const testConnection = async (urlToTest) => {
+  const testConnection = useCallback(async (urlToTest) => {
     const url = urlToTest !== undefined ? urlToTest : apiUrl;
     
     if (!url || !url.trim()) {
@@ -22,11 +22,11 @@ const SettingsPage = () => {
     } else {
       setBackendStatus({ checking: false, online: false, error: res.error });
     }
-  };
+  }, [apiUrl]);
 
   useEffect(() => {
-    testConnection(apiUrl);
-  }, []);
+    testConnection();
+  }, [testConnection]);
 
   const handleUrlChange = (e) => {
     const val = e.target.value;

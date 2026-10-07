@@ -3,6 +3,8 @@ const fs = require('fs');
 
 const allowedDirs = [
   path.resolve(__dirname, '../../data'),
+  path.resolve(__dirname, '../../../data'),
+  path.resolve(__dirname, '../../../Data'),
   path.resolve(__dirname, '../../../essential')
 ];
 
@@ -28,9 +30,14 @@ function isSafeFilePath(input) {
   }
 
   try {
-    const resolved = path.resolve(trimmed);
-    const isWithinAllowed = allowedDirs.some(dir => resolved.startsWith(dir));
-    return isWithinAllowed && fs.existsSync(resolved) && fs.statSync(resolved).isFile();
+    const resolved = path.resolve(trimmed).toLowerCase();
+    const isWithinAllowed = allowedDirs.some(dir => {
+      const targetDir = dir.toLowerCase();
+      const relative = path.relative(targetDir, resolved);
+      return relative && !relative.startsWith('..') && !path.isAbsolute(relative);
+    });
+    const realPath = path.resolve(trimmed);
+    return isWithinAllowed && fs.existsSync(realPath) && fs.statSync(realPath).isFile();
   } catch (e) {
     return false;
   }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { getProducts } from '../services/api';
 import { Search, Package } from 'lucide-react';
 
@@ -9,7 +9,7 @@ const ProductsPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
 
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -18,15 +18,16 @@ const ProductsPage = () => {
       const data = await getProducts(filters);
       setProducts(data);
     } catch (err) {
+      console.error('Fetch products error:', err);
       setError('Unable to load products.');
     } finally {
       setLoading(false);
     }
-  };
+  }, [categoryFilter]);
 
   useEffect(() => {
     fetchProducts();
-  }, [categoryFilter]);
+  }, [fetchProducts]);
 
   const filtered = products.filter(p =>
     p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||

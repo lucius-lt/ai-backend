@@ -6,14 +6,17 @@ const xmlService = require('./xml.service');
 const currencyService = require('./currency.service');
 
 const dataDir = path.join(__dirname, '../../data');
+const rootDataDir = path.join(__dirname, '../../../data');
+const rootDataDirCap = path.join(__dirname, '../../../Data');
 const essentialDir = path.join(__dirname, '../../../essential');
 
 function getFallbackFilePath(filename) {
-  const primary = path.join(dataDir, filename);
-  if (fs.existsSync(primary)) return primary;
-  const secondary = path.join(essentialDir, filename);
-  if (fs.existsSync(secondary)) return secondary;
-  return primary;
+  const candidateDirs = [dataDir, rootDataDir, rootDataDirCap, essentialDir];
+  for (const dir of candidateDirs) {
+    const filePath = path.join(dir, filename);
+    if (fs.existsSync(filePath)) return filePath;
+  }
+  return path.join(dataDir, filename);
 }
 
 class TransformationService {

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getDelivery, getOrders } from '../services/api';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
-import { Truck, PackageCheck, Clock, AlertTriangle } from 'lucide-react';
+import { Truck, PackageCheck, Clock } from 'lucide-react';
 
 const DeliveryPage = () => {
   const [delivery, setDelivery] = useState(null);
@@ -22,6 +22,7 @@ const DeliveryPage = () => {
         setDelivery(d);
         setOrders(o);
       } catch (err) {
+        console.error('Delivery data load error:', err);
         setError('Unable to load delivery data.');
       } finally {
         setLoading(false);

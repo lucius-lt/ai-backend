@@ -203,7 +203,7 @@ export const checkBackendHealth = async (testUrl) => {
     if (!['http:', 'https:'].includes(parsed.protocol)) {
       return { online: false, error: 'URL must start with http:// or https://' };
     }
-  } catch (e) {
+  } catch {
     return { online: false, error: 'Invalid URL format (e.g. http://localhost:5000/api)' };
   }
 

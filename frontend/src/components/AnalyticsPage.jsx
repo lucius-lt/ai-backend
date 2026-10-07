@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { getSummary, getRevenue, getCategories } from '../services/api';
 import {
   AreaChart, Area, BarChart, Bar, LineChart, Line,
-  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
+  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from 'recharts';
 import { TrendingUp, TrendingDown, DollarSign, ShoppingBag, Clock, PackageCheck } from 'lucide-react';
 
@@ -29,6 +29,7 @@ const AnalyticsPage = () => {
         setRevenue(r);
         setCategories(c);
       } catch (err) {
+        console.error('Analytics load error:', err);
         setError('Unable to load analytics.');
       } finally {
         setLoading(false);

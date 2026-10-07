@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   Database, 
   Upload, 
@@ -40,7 +40,7 @@ const PipelinePage = () => {
   const [selectedRegion, setSelectedRegion] = useState('');
   const [loadingCountries, setLoadingCountries] = useState(false);
 
-  const refreshStatus = async () => {
+  const refreshStatus = useCallback(async () => {
     try {
       const health = await checkBackendHealth();
       setBackendOnline(health.online);
@@ -53,34 +53,38 @@ const PipelinePage = () => {
         setDbStats(null);
       }
     } catch (e) {
+      console.warn('Status refresh warning:', e);
       setBackendOnline(false);
       setDbStats(null);
     }
-  };
+  }, []);
 
-  const loadExternalApis = async () => {
+  const loadExternalApis = useCallback(async () => {
     try {
       const curr = await getCurrencyRates('INR');
       setCurrencyData(curr);
-    } catch (e) {}
+    } catch (e) {
+      console.warn('Currency rates warning:', e);
+    }
 
     try {
       setLoadingCountries(true);
       const c = await getCountries(selectedRegion);
       setCountries(c.slice(0, 10));
-    } catch (e) {} finally {
+    } catch (e) {
+      console.warn('Countries warning:', e);
+    } finally {
       setLoadingCountries(false);
     }
-  };
+  }, [selectedRegion]);
 
   useEffect(() => {
     refreshStatus();
-    loadExternalApis();
-  }, []);
+  }, [refreshStatus]);
 
   useEffect(() => {
     loadExternalApis();
-  }, [selectedRegion]);
+  }, [loadExternalApis]);
 
   const showNotification = (type, text) => {
     setStatusMessage({ type, text });

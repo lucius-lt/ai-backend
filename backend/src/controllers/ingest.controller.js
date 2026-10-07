@@ -6,14 +6,17 @@ const xmlService = require('../services/xml.service');
 const storageService = require('../services/storage.service');
 
 const dataDir = path.join(__dirname, '../../data');
+const rootDataDir = path.join(__dirname, '../../../data');
+const rootDataDirCap = path.join(__dirname, '../../../Data');
 const essentialDir = path.join(__dirname, '../../../essential');
 
 function getFallbackFilePath(filename) {
-  const p1 = path.join(dataDir, filename);
-  if (fs.existsSync(p1)) return p1;
-  const p2 = path.join(essentialDir, filename);
-  if (fs.existsSync(p2)) return p2;
-  return p1;
+  const candidateDirs = [dataDir, rootDataDir, rootDataDirCap, essentialDir];
+  for (const dir of candidateDirs) {
+    const filePath = path.join(dir, filename);
+    if (fs.existsSync(filePath)) return filePath;
+  }
+  return path.join(dataDir, filename);
 }
 
 class IngestController {

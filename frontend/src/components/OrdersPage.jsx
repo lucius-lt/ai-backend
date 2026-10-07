@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { getOrders } from '../services/api';
 import { OrderDrawer } from './Drawers';
 import { Search, ChevronLeft, ChevronRight } from 'lucide-react';
@@ -14,7 +14,7 @@ const OrdersPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const perPage = 8;
 
-  const fetchOrders = async () => {
+  const fetchOrders = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -24,15 +24,16 @@ const OrdersPage = () => {
       const data = await getOrders(filters);
       setOrders(data);
     } catch (err) {
+      console.error('Fetch orders error:', err);
       setError('Unable to load orders.');
     } finally {
       setLoading(false);
     }
-  };
+  }, [statusFilter, categoryFilter]);
 
   useEffect(() => {
     fetchOrders();
-  }, [statusFilter, categoryFilter]);
+  }, [fetchOrders]);
 
   const filtered = orders.filter(o =>
     o.orderId.toLowerCase().includes(searchTerm.toLowerCase()) ||

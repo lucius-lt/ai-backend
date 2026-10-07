@@ -1,5 +1,5 @@
 import React from 'react';
-import { ShoppingBag, DollarSign, Clock, TrendingUp, PackageCheck, CalendarDays } from 'lucide-react';
+import { ShoppingBag, DollarSign, Clock, TrendingUp } from 'lucide-react';
 
 const formatCurrency = (value) => {
   return new Intl.NumberFormat('en-IN', {

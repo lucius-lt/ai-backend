@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import FilterBar from './FilterBar';
 import KpiCards from './KpiCards';
 import { RevenueChart, CategoryChart, DeliveryChart } from './Charts';
@@ -38,7 +38,7 @@ const Dashboard = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedOrder, setSelectedOrder] = useState(null);
 
-  const fetchData = async (currentFilters) => {
+  const fetchData = useCallback(async (currentFilters) => {
     setLoading({
       summary: true,
       revenue: true,
@@ -76,11 +76,11 @@ const Dashboard = () => {
         orders: false
       });
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchData(appliedFilters);
-  }, [appliedFilters]);
+  }, [fetchData, appliedFilters]);
 
   const handleApplyFilters = () => {
     setAppliedFilters({ ...filters });
