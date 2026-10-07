@@ -44,18 +44,13 @@ const PipelinePage = () => {
     try {
       const health = await checkBackendHealth();
       setBackendOnline(health.online);
-      if (health.online) {
-        const statusRes = await getPipelineStatus();
-        if (statusRes.success) {
-          setDbStats(statusRes.data);
-        }
-      } else {
-        setDbStats(null);
+      const statusRes = await getPipelineStatus();
+      if (statusRes && statusRes.success) {
+        setDbStats(statusRes.data);
       }
     } catch (e) {
       console.warn('Status refresh warning:', e);
       setBackendOnline(false);
-      setDbStats(null);
     }
   }, []);
 

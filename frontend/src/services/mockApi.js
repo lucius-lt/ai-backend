@@ -278,3 +278,135 @@ export const getMockProducts = async (filters = {}) => {
   }
   return data;
 };
+
+// In-Memory Database Statistics Counter
+let customOrdersCount = 0;
+let customProductsCount = 0;
+let customShipmentsCount = 0;
+
+export const mockGetPipelineStatus = async () => {
+  await delay(100);
+  return {
+    success: true,
+    data: {
+      orders: seedOrders.length + customOrdersCount,
+      customers: 20 + Math.floor(customOrdersCount / 2),
+      products: mockProducts.length + customProductsCount,
+      shipments: seedOrders.length + customShipmentsCount,
+      orderItems: (seedOrders.length + customOrdersCount) * 2
+    }
+  };
+};
+
+export const mockIngestJson = async (fileOrData) => {
+  await delay(300);
+  let newOrders = [];
+
+  try {
+    let parsed = fileOrData;
+    if (typeof File !== 'undefined' && fileOrData instanceof File) {
+      const text = await fileOrData.text();
+      parsed = JSON.parse(text);
+    } else if (typeof fileOrData === 'string' && fileOrData.trim()) {
+      parsed = JSON.parse(fileOrData);
+    }
+
+    if (Array.isArray(parsed)) {
+      newOrders = parsed;
+    } else if (parsed && typeof parsed === 'object') {
+      newOrders = parsed.orders || parsed.data || parsed.items || (parsed.order_id || parsed.id ? [parsed] : []);
+    }
+  } catch (err) {
+    // If parse fails or empty, use sample orders
+    console.warn('[MockIngest] JSON parse fallback:', err.message);
+  }
+
+  // Default sample if empty or no orders found
+  if (!newOrders || newOrders.length === 0) {
+    newOrders = [
+      { orderId: `ORD-${Date.now().toString().slice(-4)}`, customer: "Sample User", date: "2024-01-01", items: 2, amount: 2400, category: "Electronics", deliveryStatus: "Delivered", deliveryDays: 3 },
+      { orderId: `ORD-${(Date.now() + 1).toString().slice(-4)}`, customer: "Demo Client", date: "2024-01-02", items: 1, amount: 1600, category: "Furniture", deliveryStatus: "Delayed", deliveryDays: 8 }
+    ];
+  }
+
+  // Normalize and prepend to active orders
+  const normalized = newOrders.map((o, idx) => ({
+    orderId: String(o.order_id || o.orderId || o.id || `ORD-${3000 + idx}`).trim(),
+    customer: typeof o.customer === 'string' ? o.customer : (o.customer?.name || 'Customer'),
+    date: String(o.order_date || o.orderDate || o.date || '2024-01-01').slice(0, 10),
+    items: Number(o.items?.length || o.items || 1),
+    amount: Number(o.amount || o.total || o.price || 1500),
+    category: String(o.category || baseCategories[idx % baseCategories.length]),
+    deliveryStatus: String(o.deliveryStatus || (idx % 3 === 0 ? "Delayed" : "Delivered")),
+    deliveryDays: Number(o.deliveryDays || (idx % 3 === 0 ? 8 : 3))
+  }));
+
+  seedOrders.unshift(...normalized);
+  customOrdersCount += normalized.length;
+
+  return {
+    success: true,
+    message: 'JSON Orders ingested and pipeline executed successfully',
+    ordersIngested: normalized.length,
+    normalizedRows: normalized.length * 2,
+    dbStats: {
+      orders: seedOrders.length,
+      customers: 20 + Math.floor(seedOrders.length / 2),
+      products: mockProducts.length + customProductsCount,
+      shipments: seedOrders.length,
+      orderItems: seedOrders.length * 2
+    }
+  };
+};
+
+export const mockIngestCsv = async (_fileOrData) => {
+  await delay(300);
+  customProductsCount += 4;
+  return {
+    success: true,
+    message: 'CSV Products ingested and pipeline executed successfully',
+    productsIngested: 4,
+    normalizedRows: 4,
+    dbStats: {
+      orders: seedOrders.length,
+      customers: 20 + Math.floor(seedOrders.length / 2),
+      products: mockProducts.length + customProductsCount,
+      shipments: seedOrders.length,
+      orderItems: seedOrders.length * 2
+    }
+  };
+};
+
+export const mockIngestXml = async (_fileOrData) => {
+  await delay(300);
+  customShipmentsCount += 2;
+  return {
+    success: true,
+    message: 'XML Shipments ingested and pipeline executed successfully',
+    shipmentsIngested: 2,
+    normalizedRows: 2,
+    dbStats: {
+      orders: seedOrders.length,
+      customers: 20 + Math.floor(seedOrders.length / 2),
+      products: mockProducts.length + customProductsCount,
+      shipments: seedOrders.length + customShipmentsCount,
+      orderItems: seedOrders.length * 2
+    }
+  };
+};
+
+export const mockSeedData = async () => {
+  await delay(400);
+  return {
+    success: true,
+    message: 'Rich demonstration dataset seeded successfully',
+    rawOrders: 41,
+    dbStats: {
+      orders: 41,
+      customers: 15,
+      products: 14,
+      shipments: 41,
+      orderItems: 82
+    }
+  };
+};

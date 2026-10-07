@@ -1,4 +1,16 @@
-import { getMockSummary, getMockRevenue, getMockCategories, getMockDelivery, getMockOrders, getMockProducts } from './mockApi';
+import { 
+  getMockSummary, 
+  getMockRevenue, 
+  getMockCategories, 
+  getMockDelivery, 
+  getMockOrders, 
+  getMockProducts,
+  mockIngestJson,
+  mockIngestCsv,
+  mockIngestXml,
+  mockSeedData,
+  mockGetPipelineStatus
+} from './mockApi';
 
 export const DEFAULT_API_URL = 'http://localhost:5000/api';
 
@@ -163,79 +175,109 @@ export const getCountries = async (region = '') => {
 
 // Data Ingestion APIs
 export const ingestJson = async (fileOrData) => {
-  const baseUrl = getApiUrl();
-  if (!baseUrl) throw new Error('Backend URL is empty');
-  const cleanBase = baseUrl.replace(/\/+$/, '');
+  return tryLiveOrMock(
+    async () => {
+      const baseUrl = getApiUrl();
+      if (!baseUrl) throw new Error('Backend URL is empty');
+      const cleanBase = baseUrl.replace(/\/+$/, '');
 
-  let body, headers = {};
-  if (fileOrData instanceof File) {
-    const formData = new FormData();
-    formData.append('file', fileOrData);
-    body = formData;
-  } else if (typeof fileOrData === 'string') {
-    headers['Content-Type'] = 'application/json';
-    body = fileOrData;
-  } else {
-    headers['Content-Type'] = 'application/json';
-    body = JSON.stringify(fileOrData);
-  }
+      let body, headers = {};
+      if (fileOrData instanceof File) {
+        const formData = new FormData();
+        formData.append('file', fileOrData);
+        body = formData;
+      } else if (typeof fileOrData === 'string') {
+        headers['Content-Type'] = 'application/json';
+        body = fileOrData;
+      } else {
+        headers['Content-Type'] = 'application/json';
+        body = JSON.stringify(fileOrData);
+      }
 
-  const res = await fetch(`${cleanBase}/ingest/json`, { method: 'POST', headers, body });
-  return res.json();
+      const res = await fetch(`${cleanBase}/ingest/json`, { method: 'POST', headers, body });
+      if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+      return res.json();
+    },
+    () => mockIngestJson(fileOrData)
+  );
 };
 
 export const ingestCsv = async (fileOrData) => {
-  const baseUrl = getApiUrl();
-  if (!baseUrl) throw new Error('Backend URL is empty');
-  const cleanBase = baseUrl.replace(/\/+$/, '');
+  return tryLiveOrMock(
+    async () => {
+      const baseUrl = getApiUrl();
+      if (!baseUrl) throw new Error('Backend URL is empty');
+      const cleanBase = baseUrl.replace(/\/+$/, '');
 
-  let body, headers = {};
-  if (fileOrData instanceof File) {
-    const formData = new FormData();
-    formData.append('file', fileOrData);
-    body = formData;
-  } else {
-    headers['Content-Type'] = 'text/csv';
-    body = String(fileOrData);
-  }
+      let body, headers = {};
+      if (fileOrData instanceof File) {
+        const formData = new FormData();
+        formData.append('file', fileOrData);
+        body = formData;
+      } else {
+        headers['Content-Type'] = 'text/csv';
+        body = String(fileOrData);
+      }
 
-  const res = await fetch(`${cleanBase}/ingest/csv`, { method: 'POST', headers, body });
-  return res.json();
+      const res = await fetch(`${cleanBase}/ingest/csv`, { method: 'POST', headers, body });
+      if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+      return res.json();
+    },
+    () => mockIngestCsv(fileOrData)
+  );
 };
 
 export const ingestXml = async (fileOrData) => {
-  const baseUrl = getApiUrl();
-  if (!baseUrl) throw new Error('Backend URL is empty');
-  const cleanBase = baseUrl.replace(/\/+$/, '');
+  return tryLiveOrMock(
+    async () => {
+      const baseUrl = getApiUrl();
+      if (!baseUrl) throw new Error('Backend URL is empty');
+      const cleanBase = baseUrl.replace(/\/+$/, '');
 
-  let body, headers = {};
-  if (fileOrData instanceof File) {
-    const formData = new FormData();
-    formData.append('file', fileOrData);
-    body = formData;
-  } else {
-    headers['Content-Type'] = 'application/xml';
-    body = String(fileOrData);
-  }
+      let body, headers = {};
+      if (fileOrData instanceof File) {
+        const formData = new FormData();
+        formData.append('file', fileOrData);
+        body = formData;
+      } else {
+        headers['Content-Type'] = 'application/xml';
+        body = String(fileOrData);
+      }
 
-  const res = await fetch(`${cleanBase}/ingest/xml`, { method: 'POST', headers, body });
-  return res.json();
+      const res = await fetch(`${cleanBase}/ingest/xml`, { method: 'POST', headers, body });
+      if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+      return res.json();
+    },
+    () => mockIngestXml(fileOrData)
+  );
 };
 
 export const seedDemoData = async () => {
-  const baseUrl = getApiUrl();
-  if (!baseUrl) throw new Error('Backend URL is empty');
-  const cleanBase = baseUrl.replace(/\/+$/, '');
-  const res = await fetch(`${cleanBase}/ingest/seed`, { method: 'POST' });
-  return res.json();
+  return tryLiveOrMock(
+    async () => {
+      const baseUrl = getApiUrl();
+      if (!baseUrl) throw new Error('Backend URL is empty');
+      const cleanBase = baseUrl.replace(/\/+$/, '');
+      const res = await fetch(`${cleanBase}/ingest/seed`, { method: 'POST' });
+      if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+      return res.json();
+    },
+    () => mockSeedData()
+  );
 };
 
 export const getPipelineStatus = async () => {
-  const baseUrl = getApiUrl();
-  if (!baseUrl) throw new Error('Backend URL is empty');
-  const cleanBase = baseUrl.replace(/\/+$/, '');
-  const res = await fetch(`${cleanBase}/ingest/status`);
-  return res.json();
+  return tryLiveOrMock(
+    async () => {
+      const baseUrl = getApiUrl();
+      if (!baseUrl) throw new Error('Backend URL is empty');
+      const cleanBase = baseUrl.replace(/\/+$/, '');
+      const res = await fetch(`${cleanBase}/ingest/status`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+      return res.json();
+    },
+    () => mockGetPipelineStatus()
+  );
 };
 
 /**

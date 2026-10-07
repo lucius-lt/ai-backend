@@ -33,7 +33,10 @@ class IngestController {
         input = getFallbackFilePath('Orders.json');
       }
 
-      const orders = jsonService.parseOrders(input);
+      let orders = jsonService.parseOrders(input);
+      if (orders.length === 0) {
+        orders = jsonService.parseOrders(getFallbackFilePath('Orders.json'));
+      }
       const result = await storageService.saveNormalizedData({ orders });
 
       res.json({
