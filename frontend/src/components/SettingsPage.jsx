@@ -43,9 +43,10 @@ const SettingsPage = () => {
   };
 
   const handleResetDefault = () => {
-    setLocalApiUrl(DEFAULT_API_URL);
-    setApiUrl(DEFAULT_API_URL);
-    testConnection(DEFAULT_API_URL);
+    const defaultEnvUrl = import.meta.env.VITE_API_URL || DEFAULT_API_URL;
+    setLocalApiUrl(defaultEnvUrl);
+    setApiUrl(null);
+    testConnection(defaultEnvUrl);
   };
 
 
@@ -69,7 +70,7 @@ const SettingsPage = () => {
             <div className="flex flex-col sm:flex-row gap-2.5">
               <input
                 type="text"
-                placeholder="http://localhost:5000/api"
+                placeholder={import.meta.env.VITE_API_URL || "http://localhost:5000/api"}
                 value={apiUrl}
                 onChange={handleUrlChange}
                 className="flex-1 px-3.5 py-2.5 border border-border rounded-lg text-sm font-mono focus:outline-none focus:border-accent"

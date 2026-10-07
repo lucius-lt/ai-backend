@@ -47,15 +47,26 @@ git clone https://github.com/KushagraDwivedics/Analytic-dashboard.git
 cd Analytic-dashboard
 ```
 
-### 2. Start the Backend API
+### 2. Environment Variables
+Create `.env` files based on the `.env.example` files provided:
+- **Frontend** (`frontend/.env`):
+  - `VITE_API_URL`: Set to `http://localhost:5000/api` for local development.
+  - `VITE_USE_MOCK_API`: Set to `false` to connect to the backend.
+- **Backend** (`backend/.env`):
+  - `PORT`: Usually `5000`.
+  - `NODE_ENV`: Set to `development`.
+  - `CORS_ORIGIN`: Set to `http://localhost:5173`.
+  - `AUTO_SEED`: Set to `true` to populate initial data.
+
+### 3. Start the Backend API
 ```bash
 cd backend
 npm install
 npm start
 ```
-The API will start at `http://localhost:5000`. You can verify it by opening `http://localhost:5000/api/health`.
+The API will start at `http://localhost:5000`. You can verify it by opening `http://localhost:5000/api/health` (Health Check URL).
 
-### 3. Start the Frontend
+### 4. Start the Frontend
 In a new terminal:
 ```bash
 cd frontend
@@ -65,6 +76,30 @@ npm run dev
 Open `http://localhost:5173` in your browser.
 
 ---
+
+## Deployment
+
+### Frontend Deployment (e.g., Vercel, Netlify)
+1. Set the root directory to `frontend`.
+2. Build command: `npm run build` (This generates the `frontend/dist` directory).
+3. Output directory: `dist`.
+4. Configure environment variables in the hosting dashboard:
+   - `VITE_API_URL`: The URL of your deployed backend (e.g., `https://your-backend-url.onrender.com/api`).
+   - `VITE_USE_MOCK_API`: `false`.
+
+### Backend Deployment (e.g., Render, Railway)
+1. Set the root directory to `backend`.
+2. Build command: `npm install`.
+3. Start command: `npm start`.
+4. Configure environment variables in the hosting dashboard:
+   - `PORT`: (Often auto-assigned by the platform).
+   - `NODE_ENV`: `production`.
+   - `CORS_ORIGIN`: The URL of your deployed frontend (e.g., `https://your-frontend-url.vercel.app`).
+   - `AUTO_SEED`: `false`.
+5. **SQLite Persistence Limitation**: This project uses a local SQLite file (`data/analytics.db`). Many modern cloud hosts (like Render or Heroku) use ephemeral file systems, meaning the database will reset whenever the server restarts. For persistent data, you must configure a persistent disk/volume on your hosting provider and point the database to that volume.
+
+### Connecting Frontend and Backend
+Ensure that the frontend's `VITE_API_URL` environment variable is pointing to the backend's deployment URL (with the `/api` suffix), and the backend's `CORS_ORIGIN` environment variable is pointing to the frontend's deployment URL.
 
 ## Features
 

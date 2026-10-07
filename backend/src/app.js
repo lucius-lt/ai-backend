@@ -14,8 +14,9 @@ initDB();
 const app = express();
 
 // Middlewares
+const allowedOrigins = process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : 'http://localhost:5173';
 app.use(cors({
-  origin: '*',
+  origin: allowedOrigins,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
@@ -56,8 +57,9 @@ const PORT = process.env.PORT || 5000;
 
 // Auto-seed baseline data if database is empty
 try {
+  const shouldSeed = process.env.AUTO_SEED === undefined ? true : process.env.AUTO_SEED === 'true';
   const currentOrders = db.prepare('SELECT COUNT(*) as count FROM orders').get().count;
-  if (currentOrders === 0) {
+  if (currentOrders === 0 && shouldSeed) {
     console.log('[Bootstrap] No existing orders found in database. Seeding initial dataset...');
     storageService.saveNormalizedData().catch(err => {
       console.warn('[Bootstrap] Auto-seed warning:', err.message);
