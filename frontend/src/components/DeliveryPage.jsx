@@ -29,6 +29,9 @@ const DeliveryPage = () => {
       }
     };
     fetchAll();
+
+    window.addEventListener('mock_dataset_updated', fetchAll);
+    return () => window.removeEventListener('mock_dataset_updated', fetchAll);
   }, []);
 
   const filteredOrders = statusView === 'all'

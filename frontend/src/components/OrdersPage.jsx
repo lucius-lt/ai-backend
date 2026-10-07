@@ -33,6 +33,9 @@ const OrdersPage = () => {
 
   useEffect(() => {
     fetchOrders();
+
+    window.addEventListener('mock_dataset_updated', fetchOrders);
+    return () => window.removeEventListener('mock_dataset_updated', fetchOrders);
   }, [fetchOrders]);
 
   const filtered = orders.filter(o =>

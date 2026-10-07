@@ -80,6 +80,10 @@ const Dashboard = () => {
 
   useEffect(() => {
     fetchData(appliedFilters);
+
+    const onDataUpdated = () => fetchData(appliedFilters);
+    window.addEventListener('mock_dataset_updated', onDataUpdated);
+    return () => window.removeEventListener('mock_dataset_updated', onDataUpdated);
   }, [fetchData, appliedFilters]);
 
   const handleApplyFilters = (newFilters) => {

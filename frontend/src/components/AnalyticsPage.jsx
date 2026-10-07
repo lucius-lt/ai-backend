@@ -36,6 +36,9 @@ const AnalyticsPage = () => {
       }
     };
     fetchAll();
+
+    window.addEventListener('mock_dataset_updated', fetchAll);
+    return () => window.removeEventListener('mock_dataset_updated', fetchAll);
   }, []);
 
   if (error) {

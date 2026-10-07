@@ -1,14 +1,16 @@
-// Realistic sample dataset for offline / Vercel demonstration
+// Complete In-Memory & LocalStorage Analytics Simulator Engine
+
 const baseCategories = ["Electronics", "Furniture", "Clothing", "Toys", "Books"];
 const customersList = [
   "Rahul Sharma", "Amit Patel", "Sneha Gupta", "Vikram Singh", "Pooja Verma",
   "Arjun Reddy", "Neha Joshi", "Karan Mehta", "Priya Nair", "Rohan Das",
   "Anita Kumari", "Suresh Yadav", "Meena Iyer", "Deepak Jain", "Kavita Rao",
-  "Ananya Roy", "Rajesh Khanna", "Pooja Hegde", "Sunil Gavaskar", "Simran Kaur"
+  "Ananya Roy", "Rajesh Khanna", "Pooja Hegde", "Sunil Gavaskar", "Simran Kaur",
+  "Ritu Desai", "Manish Tiwari", "Swati Sengupta", "Gaurav Chopra", "Divya Nambiar"
 ];
 
-// Seeded baseline records (Jan 2024)
-const seedOrders = [
+// 42 Rich baseline orders spanning January 2024
+const INITIAL_SEED_ORDERS = [
   { orderId: "ORD-1001", customer: "Rahul Sharma", date: "2024-01-01", items: 3, amount: 2200, category: "Electronics", deliveryStatus: "Delivered", deliveryDays: 3 },
   { orderId: "ORD-1002", customer: "Amit Patel", date: "2024-01-01", items: 1, amount: 1500, category: "Furniture", deliveryStatus: "Delayed", deliveryDays: 8 },
   { orderId: "ORD-1003", customer: "Sneha Gupta", date: "2024-01-02", items: 5, amount: 3100, category: "Clothing", deliveryStatus: "Delivered", deliveryDays: 2 },
@@ -37,28 +39,93 @@ const seedOrders = [
   { orderId: "ORD-1026", customer: "Arjun Reddy", date: "2024-01-13", items: 1, amount: 850, category: "Books", deliveryStatus: "Delivered", deliveryDays: 2 },
   { orderId: "ORD-1027", customer: "Neha Joshi", date: "2024-01-14", items: 3, amount: 3100, category: "Furniture", deliveryStatus: "Delivered", deliveryDays: 5 },
   { orderId: "ORD-1028", customer: "Karan Mehta", date: "2024-01-14", items: 5, amount: 4700, category: "Clothing", deliveryStatus: "Delayed", deliveryDays: 7 },
+  { orderId: "ORD-1029", customer: "Ritu Desai", date: "2024-01-15", items: 2, amount: 3800, category: "Electronics", deliveryStatus: "Delivered", deliveryDays: 3 },
+  { orderId: "ORD-1030", customer: "Manish Tiwari", date: "2024-01-15", items: 1, amount: 1100, category: "Books", deliveryStatus: "Delivered", deliveryDays: 4 },
+  { orderId: "ORD-1031", customer: "Swati Sengupta", date: "2024-01-16", items: 4, amount: 4500, category: "Furniture", deliveryStatus: "Delayed", deliveryDays: 9 },
+  { orderId: "ORD-1032", customer: "Gaurav Chopra", date: "2024-01-16", items: 3, amount: 2600, category: "Clothing", deliveryStatus: "Delivered", deliveryDays: 2 },
+  { orderId: "ORD-1033", customer: "Divya Nambiar", date: "2024-01-17", items: 2, amount: 1950, category: "Toys", deliveryStatus: "Delivered", deliveryDays: 3 },
+  { orderId: "ORD-1034", customer: "Alok Mukherjee", date: "2024-01-17", items: 5, amount: 6400, category: "Electronics", deliveryStatus: "Delivered", deliveryDays: 4 },
+  { orderId: "ORD-1035", customer: "Bhavna Bhatt", date: "2024-01-18", items: 1, amount: 750, category: "Books", deliveryStatus: "Delivered", deliveryDays: 2 },
+  { orderId: "ORD-1036", customer: "Kunal Kapoor", date: "2024-01-18", items: 3, amount: 3400, category: "Clothing", deliveryStatus: "Delayed", deliveryDays: 8 },
+  { orderId: "ORD-1037", customer: "Pallavi Ghosh", date: "2024-01-19", items: 2, amount: 2900, category: "Furniture", deliveryStatus: "Delivered", deliveryDays: 4 },
+  { orderId: "ORD-1038", customer: "Tarun Bajaj", date: "2024-01-19", items: 4, amount: 5100, category: "Electronics", deliveryStatus: "Delivered", deliveryDays: 3 },
+  { orderId: "ORD-1039", customer: "Geeta Somani", date: "2024-01-20", items: 2, amount: 1650, category: "Toys", deliveryStatus: "Delayed", deliveryDays: 7 },
+  { orderId: "ORD-1040", customer: "Vivek Oberoi", date: "2024-01-20", items: 3, amount: 3200, category: "Clothing", deliveryStatus: "Delivered", deliveryDays: 3 },
+  { orderId: "ORD-1041", customer: "Aditi Rao", date: "2024-01-21", items: 6, amount: 7200, category: "Electronics", deliveryStatus: "Delivered", deliveryDays: 2 },
+  { orderId: "ORD-1042", customer: "Sanjay Singhania", date: "2024-01-21", items: 1, amount: 900, category: "Books", deliveryStatus: "Delivered", deliveryDays: 3 }
 ];
 
-export const mockProducts = [
-  { id: "P101", name: "Laptop", category: "Electronics", price: 45000, stock: 120 },
-  { id: "P102", name: "Smartphone", category: "Electronics", price: 25000, stock: 340 },
-  { id: "P103", name: "Tablet", category: "Electronics", price: 18000, stock: 85 },
-  { id: "P104", name: "Monitor", category: "Electronics", price: 12000, stock: 60 },
-  { id: "P201", name: "Office Chair", category: "Furniture", price: 8500, stock: 45 },
-  { id: "P202", name: "Standing Desk", category: "Furniture", price: 15000, stock: 30 },
-  { id: "P203", name: "Bookshelf", category: "Furniture", price: 6500, stock: 55 },
-  { id: "P301", name: "T-Shirt", category: "Clothing", price: 800, stock: 500 },
-  { id: "P302", name: "Jeans", category: "Clothing", price: 1500, stock: 280 },
-  { id: "P303", name: "Jacket", category: "Clothing", price: 3500, stock: 90 },
-  { id: "P401", name: "Building Blocks", category: "Toys", price: 1200, stock: 200 },
-  { id: "P402", name: "RC Car", category: "Toys", price: 2500, stock: 75 },
-  { id: "P501", name: "Novel Set", category: "Books", price: 600, stock: 400 },
-  { id: "P502", name: "Programming Guide", category: "Books", price: 950, stock: 150 },
+const INITIAL_PRODUCTS = [
+  { id: "P101", name: "Laptop Pro", category: "Electronics", price: 45000, stock: 120 },
+  { id: "P102", name: "Smartphone Ultra", category: "Electronics", price: 25000, stock: 340 },
+  { id: "P103", name: "Tablet Touch", category: "Electronics", price: 18000, stock: 85 },
+  { id: "P104", name: "4K Monitor 27\"", category: "Electronics", price: 12000, stock: 60 },
+  { id: "P201", name: "Ergonomic Office Chair", category: "Furniture", price: 8500, stock: 45 },
+  { id: "P202", name: "Electric Standing Desk", category: "Furniture", price: 15000, stock: 30 },
+  { id: "P203", name: "Modular Bookshelf", category: "Furniture", price: 6500, stock: 55 },
+  { id: "P301", name: "Cotton Crew T-Shirt", category: "Clothing", price: 800, stock: 500 },
+  { id: "P302", name: "Slim Fit Denim Jeans", category: "Clothing", price: 1500, stock: 280 },
+  { id: "P303", name: "All-Weather Bomber Jacket", category: "Clothing", price: 3500, stock: 90 },
+  { id: "P401", name: "Magnetic Building Blocks", category: "Toys", price: 1200, stock: 200 },
+  { id: "P402", name: "High-Speed RC Offroad Car", category: "Toys", price: 2500, stock: 75 },
+  { id: "P501", name: "Classic Literature Novel Set", category: "Books", price: 600, stock: 400 },
+  { id: "P502", name: "Modern Web Dev Guide", category: "Books", price: 950, stock: 150 }
 ];
+
+// LocalStorage Persistence Helpers
+const ORDERS_STORAGE_KEY = 'analytic_dashboard_orders_data';
+const PRODUCTS_STORAGE_KEY = 'analytic_dashboard_products_data';
+
+export const getStoredOrders = () => {
+  if (typeof window === 'undefined') return [...INITIAL_SEED_ORDERS];
+  try {
+    const raw = localStorage.getItem(ORDERS_STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch (e) {
+    console.warn('LocalStorage orders read error:', e);
+  }
+  return [...INITIAL_SEED_ORDERS];
+};
+
+export const setStoredOrders = (orders) => {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(orders));
+    window.dispatchEvent(new CustomEvent('mock_dataset_updated', { detail: { count: orders.length } }));
+  } catch (e) {
+    console.warn('LocalStorage orders write error:', e);
+  }
+};
+
+export const getStoredProducts = () => {
+  if (typeof window === 'undefined') return [...INITIAL_PRODUCTS];
+  try {
+    const raw = localStorage.getItem(PRODUCTS_STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch (e) {
+    console.warn('LocalStorage products read error:', e);
+  }
+  return [...INITIAL_PRODUCTS];
+};
+
+export const setStoredProducts = (products) => {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem(PRODUCTS_STORAGE_KEY, JSON.stringify(products));
+    window.dispatchEvent(new CustomEvent('mock_dataset_updated', { detail: { productsCount: products.length } }));
+  } catch (e) {
+    console.warn('LocalStorage products write error:', e);
+  }
+};
 
 /**
- * Dynamically synthesizes orders for an arbitrary date window so that selecting
- * ANY date range (even today, 2025, or 2026) produces coherent, realistic charts.
+ * Synthesizes dynamic records for an arbitrary date window outside seed data
  */
 function synthesizeOrdersForDateRange(startDateStr, endDateStr) {
   const start = new Date(startDateStr);
@@ -67,19 +134,17 @@ function synthesizeOrdersForDateRange(startDateStr, endDateStr) {
 
   const orders = [];
   let curr = new Date(start);
-  let idCounter = 2000;
-
-  // Max 60 days to prevent excessive loops
+  let idCounter = 5000;
   let daysCount = 0;
+
   while (curr <= end && daysCount < 60) {
     const dateStr = curr.toISOString().slice(0, 10);
-    // Deterministic pseudo-random orders per day based on date string
     const seed = (curr.getDate() * 7 + curr.getMonth() * 13 + curr.getFullYear()) % 10;
-    const ordersToday = 2 + (seed % 4); // 2 to 5 orders/day
+    const ordersToday = 2 + (seed % 4);
 
     for (let i = 0; i < ordersToday; i++) {
       const cat = baseCategories[(seed + i) % baseCategories.length];
-      const isDelayed = (seed + i) % 5 === 0;
+      const isDelayed = (seed + i) % 4 === 0;
       const amount = 800 + ((seed * 340 + i * 510) % 5000);
       orders.push({
         orderId: `ORD-${idCounter++}`,
@@ -101,18 +166,17 @@ function synthesizeOrdersForDateRange(startDateStr, endDateStr) {
 }
 
 /**
- * Filter orders based on user inputs. If the user picks dates outside seed data,
- * dynamically generate realistic orders for that date window.
+ * Filter orders based on user query parameters.
  */
 function getFilteredDataset(filters = {}) {
-  let dataset = [...seedOrders];
+  const allOrders = getStoredOrders();
+  let dataset = [...allOrders];
 
   if (filters.startDate && filters.endDate) {
-    const seedMatches = seedOrders.filter(o => o.date >= filters.startDate && o.date <= filters.endDate);
+    const seedMatches = dataset.filter(o => o.date >= filters.startDate && o.date <= filters.endDate);
     if (seedMatches.length > 0) {
       dataset = seedMatches;
     } else {
-      // Dynamic generation for arbitrary user date selection
       dataset = synthesizeOrdersForDateRange(filters.startDate, filters.endDate);
     }
   } else if (filters.startDate) {
@@ -132,25 +196,12 @@ function getFilteredDataset(filters = {}) {
   return dataset;
 }
 
-const delay = (ms = 250) => new Promise(resolve => setTimeout(resolve, ms));
+const delay = (ms = 120) => new Promise(resolve => setTimeout(resolve, ms));
 
-// Dynamically calculated Summary KPI Card data
+// Dynamically calculated Summary KPI Card data — derived 100% from actual orders!
 export const getMockSummary = async (filters = {}) => {
-  await delay(150);
+  await delay(80);
   const orders = getFilteredDataset(filters);
-
-  // If no filters at all, provide headline benchmark metrics
-  const isUnfiltered = !filters.startDate && !filters.endDate && !filters.category && !filters.deliveryStatus;
-  if (isUnfiltered) {
-    return {
-      totalOrders: 1250,
-      totalRevenue: 458000,
-      delayedOrders: 87,
-      deliveredOrders: 1163,
-      averageOrderValue: 366.4,
-      averageDeliveryDays: 4.2
-    };
-  }
 
   const totalOrders = orders.length;
   const totalRevenue = orders.reduce((sum, o) => sum + (o.amount || 0), 0);
@@ -166,75 +217,48 @@ export const getMockSummary = async (filters = {}) => {
     delayedOrders,
     deliveredOrders,
     averageOrderValue,
-    averageDeliveryDays
+    averageDeliveryDays,
+    // snake_case keys for cross-compatibility
+    total_orders: totalOrders,
+    total_revenue: totalRevenue,
+    delayed_orders: delayedOrders
   };
 };
 
-// Dynamically aggregated Revenue trend chart
+// Dynamically aggregated Revenue trend chart — derived 100% from actual orders!
 export const getMockRevenue = async (filters = {}) => {
-  await delay(150);
+  await delay(80);
   const orders = getFilteredDataset(filters);
 
-  // If unfiltered, return the standard 14-day trend
-  const isUnfiltered = !filters.startDate && !filters.endDate && !filters.category && !filters.deliveryStatus;
-  if (isUnfiltered) {
-    return [
-      { date: "2024-01-01", revenue: 12500, orders: 42 },
-      { date: "2024-01-02", revenue: 14800, orders: 51 },
-      { date: "2024-01-03", revenue: 16000, orders: 60 },
-      { date: "2024-01-04", revenue: 13500, orders: 45 },
-      { date: "2024-01-05", revenue: 18200, orders: 65 },
-      { date: "2024-01-06", revenue: 21000, orders: 78 },
-      { date: "2024-01-07", revenue: 19500, orders: 70 },
-      { date: "2024-01-08", revenue: 17300, orders: 58 },
-      { date: "2024-01-09", revenue: 15600, orders: 52 },
-      { date: "2024-01-10", revenue: 22100, orders: 80 },
-      { date: "2024-01-11", revenue: 20400, orders: 72 },
-      { date: "2024-01-12", revenue: 18900, orders: 63 },
-      { date: "2024-01-13", revenue: 16700, orders: 55 },
-      { date: "2024-01-14", revenue: 23500, orders: 85 },
-    ];
-  }
-
-  // Aggregate by date
   const map = new Map();
   orders.forEach(o => {
     if (!map.has(o.date)) {
       map.set(o.date, { date: o.date, revenue: 0, orders: 0 });
     }
     const item = map.get(o.date);
-    item.revenue += o.amount;
+    item.revenue += (o.amount || 0);
     item.orders += 1;
   });
 
   return Array.from(map.values()).sort((a, b) => a.date.localeCompare(b.date));
 };
 
-// Dynamically aggregated Category chart
+// Dynamically aggregated Category chart — derived 100% from actual orders!
 export const getMockCategories = async (filters = {}) => {
-  await delay(150);
+  await delay(80);
   const orders = getFilteredDataset(filters);
-
-  const isUnfiltered = !filters.startDate && !filters.endDate && !filters.category && !filters.deliveryStatus;
-  if (isUnfiltered) {
-    return [
-      { category: "Electronics", revenue: 185000, orders: 420 },
-      { category: "Furniture", revenue: 92000, orders: 210 },
-      { category: "Clothing", revenue: 74000, orders: 310 },
-      { category: "Toys", revenue: 45000, orders: 150 },
-      { category: "Books", revenue: 62000, orders: 160 },
-    ];
-  }
 
   const map = new Map();
   baseCategories.forEach(cat => map.set(cat, { category: cat, revenue: 0, orders: 0 }));
 
   orders.forEach(o => {
-    if (map.has(o.category)) {
-      const item = map.get(o.category);
-      item.revenue += o.amount;
-      item.orders += 1;
+    const cat = o.category || 'General';
+    if (!map.has(cat)) {
+      map.set(cat, { category: cat, revenue: 0, orders: 0 });
     }
+    const item = map.get(cat);
+    item.revenue += (o.amount || 0);
+    item.orders += 1;
   });
 
   let result = Array.from(map.values());
@@ -244,62 +268,59 @@ export const getMockCategories = async (filters = {}) => {
   return result;
 };
 
-// Dynamically aggregated Delivery performance donut
+// Dynamically aggregated Delivery performance donut — derived 100% from actual orders!
 export const getMockDelivery = async (filters = {}) => {
-  await delay(150);
+  await delay(80);
   const orders = getFilteredDataset(filters);
-
-  const isUnfiltered = !filters.startDate && !filters.endDate && !filters.category && !filters.deliveryStatus;
-  if (isUnfiltered) {
-    return {
-      delivered: 1163,
-      delayed: 87,
-      unknown: 0
-    };
-  }
 
   const delivered = orders.filter(o => o.deliveryStatus === 'Delivered').length;
   const delayed = orders.filter(o => o.deliveryStatus === 'Delayed').length;
 
-  return { delivered, delayed, unknown: 0 };
+  return {
+    delivered,
+    delayed,
+    unknown: 0
+  };
 };
 
-// Dynamically filtered Orders table
+// Dynamically filtered Orders table — derived 100% from actual orders!
 export const getMockOrders = async (filters = {}) => {
-  await delay(150);
+  await delay(80);
   return getFilteredDataset(filters);
 };
 
+// Products catalog
 export const getMockProducts = async (filters = {}) => {
-  await delay(150);
-  let data = [...mockProducts];
+  await delay(80);
+  let products = getStoredProducts();
   if (filters?.category) {
-    data = data.filter(p => p.category.toLowerCase() === filters.category.toLowerCase());
+    products = products.filter(p => p.category.toLowerCase() === filters.category.toLowerCase());
   }
-  return data;
+  return products;
 };
 
-// In-Memory Database Statistics Counter
-let customOrdersCount = 0;
-let customProductsCount = 0;
-let customShipmentsCount = 0;
-
+// Pipeline status counter
 export const mockGetPipelineStatus = async () => {
-  await delay(100);
+  await delay(60);
+  const orders = getStoredOrders();
+  const products = getStoredProducts();
+  const uniqueCustomers = new Set(orders.map(o => o.customer)).size;
+
   return {
     success: true,
     data: {
-      orders: seedOrders.length + customOrdersCount,
-      customers: 20 + Math.floor(customOrdersCount / 2),
-      products: mockProducts.length + customProductsCount,
-      shipments: seedOrders.length + customShipmentsCount,
-      orderItems: (seedOrders.length + customOrdersCount) * 2
+      orders: orders.length,
+      customers: Math.max(uniqueCustomers, 12),
+      products: products.length,
+      shipments: orders.length,
+      orderItems: orders.reduce((sum, o) => sum + (o.items || 1), 0)
     }
   };
 };
 
+// JSON Ingestion — parses, validates, and stores orders to update entire app!
 export const mockIngestJson = async (fileOrData) => {
-  await delay(300);
+  await delay(200);
   let newOrders = [];
 
   try {
@@ -317,23 +338,24 @@ export const mockIngestJson = async (fileOrData) => {
       newOrders = parsed.orders || parsed.data || parsed.items || (parsed.order_id || parsed.id ? [parsed] : []);
     }
   } catch (err) {
-    // If parse fails or empty, use sample orders
-    console.warn('[MockIngest] JSON parse fallback:', err.message);
+    console.warn('[MockIngest] JSON parse notice:', err.message);
   }
 
-  // Default sample if empty or no orders found
+  // If empty payload, ingest fresh sample batch
   if (!newOrders || newOrders.length === 0) {
+    const timestamp = Date.now().toString().slice(-4);
     newOrders = [
-      { orderId: `ORD-${Date.now().toString().slice(-4)}`, customer: "Sample User", date: "2024-01-01", items: 2, amount: 2400, category: "Electronics", deliveryStatus: "Delivered", deliveryDays: 3 },
-      { orderId: `ORD-${(Date.now() + 1).toString().slice(-4)}`, customer: "Demo Client", date: "2024-01-02", items: 1, amount: 1600, category: "Furniture", deliveryStatus: "Delayed", deliveryDays: 8 }
+      { orderId: `ORD-${timestamp}-1`, customer: "Sample User A", date: "2024-01-22", items: 2, amount: 2800, category: "Electronics", deliveryStatus: "Delivered", deliveryDays: 3 },
+      { orderId: `ORD-${timestamp}-2`, customer: "Sample User B", date: "2024-01-22", items: 1, amount: 1600, category: "Furniture", deliveryStatus: "Delayed", deliveryDays: 8 },
+      { orderId: `ORD-${timestamp}-3`, customer: "Sample User C", date: "2024-01-23", items: 3, amount: 3400, category: "Clothing", deliveryStatus: "Delivered", deliveryDays: 2 }
     ];
   }
 
-  // Normalize and prepend to active orders
+  // Normalize fields
   const normalized = newOrders.map((o, idx) => ({
-    orderId: String(o.order_id || o.orderId || o.id || `ORD-${3000 + idx}`).trim(),
+    orderId: String(o.order_id || o.orderId || o.id || `ORD-${Date.now().toString().slice(-4)}-${idx}`).trim(),
     customer: typeof o.customer === 'string' ? o.customer : (o.customer?.name || 'Customer'),
-    date: String(o.order_date || o.orderDate || o.date || '2024-01-01').slice(0, 10),
+    date: String(o.order_date || o.orderDate || o.date || '2024-01-22').slice(0, 10),
     items: Number(o.items?.length || o.items || 1),
     amount: Number(o.amount || o.total || o.price || 1500),
     category: String(o.category || baseCategories[idx % baseCategories.length]),
@@ -341,8 +363,9 @@ export const mockIngestJson = async (fileOrData) => {
     deliveryDays: Number(o.deliveryDays || (idx % 3 === 0 ? 8 : 3))
   }));
 
-  seedOrders.unshift(...normalized);
-  customOrdersCount += normalized.length;
+  const current = getStoredOrders();
+  const updated = [...normalized, ...current];
+  setStoredOrders(updated);
 
   return {
     success: true,
@@ -350,63 +373,85 @@ export const mockIngestJson = async (fileOrData) => {
     ordersIngested: normalized.length,
     normalizedRows: normalized.length * 2,
     dbStats: {
-      orders: seedOrders.length,
-      customers: 20 + Math.floor(seedOrders.length / 2),
-      products: mockProducts.length + customProductsCount,
-      shipments: seedOrders.length,
-      orderItems: seedOrders.length * 2
+      orders: updated.length,
+      customers: new Set(updated.map(o => o.customer)).size,
+      products: getStoredProducts().length,
+      shipments: updated.length,
+      orderItems: updated.reduce((sum, o) => sum + (o.items || 1), 0)
     }
   };
 };
 
 export const mockIngestCsv = async (_fileOrData) => {
-  await delay(300);
-  customProductsCount += 4;
+  await delay(200);
+  const products = getStoredProducts();
+  const newProduct = {
+    id: `P${products.length + 101}`,
+    name: `Imported Product ${products.length + 1}`,
+    category: baseCategories[products.length % baseCategories.length],
+    price: 1200 + (products.length * 150),
+    stock: 100
+  };
+  const updated = [newProduct, ...products];
+  setStoredProducts(updated);
+
   return {
     success: true,
     message: 'CSV Products ingested and pipeline executed successfully',
-    productsIngested: 4,
-    normalizedRows: 4,
+    productsIngested: 1,
+    normalizedRows: 1,
     dbStats: {
-      orders: seedOrders.length,
-      customers: 20 + Math.floor(seedOrders.length / 2),
-      products: mockProducts.length + customProductsCount,
-      shipments: seedOrders.length,
-      orderItems: seedOrders.length * 2
+      orders: getStoredOrders().length,
+      customers: 20,
+      products: updated.length,
+      shipments: getStoredOrders().length,
+      orderItems: getStoredOrders().reduce((sum, o) => sum + (o.items || 1), 0)
     }
   };
 };
 
 export const mockIngestXml = async (_fileOrData) => {
-  await delay(300);
-  customShipmentsCount += 2;
+  await delay(200);
+  // Mark a few orders as delivered
+  const orders = getStoredOrders();
+  const updated = orders.map((o, idx) => {
+    if (idx < 2 && o.deliveryStatus === 'Delayed') {
+      return { ...o, deliveryStatus: 'Delivered', deliveryDays: 4 };
+    }
+    return o;
+  });
+  setStoredOrders(updated);
+
   return {
     success: true,
     message: 'XML Shipments ingested and pipeline executed successfully',
     shipmentsIngested: 2,
     normalizedRows: 2,
     dbStats: {
-      orders: seedOrders.length,
-      customers: 20 + Math.floor(seedOrders.length / 2),
-      products: mockProducts.length + customProductsCount,
-      shipments: seedOrders.length + customShipmentsCount,
-      orderItems: seedOrders.length * 2
+      orders: updated.length,
+      customers: 20,
+      products: getStoredProducts().length,
+      shipments: updated.length,
+      orderItems: updated.reduce((sum, o) => sum + (o.items || 1), 0)
     }
   };
 };
 
 export const mockSeedData = async () => {
-  await delay(400);
+  await delay(300);
+  setStoredOrders([...INITIAL_SEED_ORDERS]);
+  setStoredProducts([...INITIAL_PRODUCTS]);
+
   return {
     success: true,
     message: 'Rich demonstration dataset seeded successfully',
-    rawOrders: 41,
+    rawOrders: INITIAL_SEED_ORDERS.length,
     dbStats: {
-      orders: 41,
-      customers: 15,
-      products: 14,
-      shipments: 41,
-      orderItems: 82
+      orders: INITIAL_SEED_ORDERS.length,
+      customers: 25,
+      products: INITIAL_PRODUCTS.length,
+      shipments: INITIAL_SEED_ORDERS.length,
+      orderItems: INITIAL_SEED_ORDERS.reduce((sum, o) => sum + (o.items || 1), 0)
     }
   };
 };

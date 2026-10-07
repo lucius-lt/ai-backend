@@ -27,6 +27,9 @@ const ProductsPage = () => {
 
   useEffect(() => {
     fetchProducts();
+
+    window.addEventListener('mock_dataset_updated', fetchProducts);
+    return () => window.removeEventListener('mock_dataset_updated', fetchProducts);
   }, [fetchProducts]);
 
   const filtered = products.filter(p =>
